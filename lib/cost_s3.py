@@ -27,6 +27,7 @@ class S3_analyzer:
             'INTELLIGENT_TIERING': 0.023,
             'STANDARD_IA': 0.0125,
             'ONEZONE_IA': 0.01,
+            'GLACIER_IR': 0.010,
             'GLACIER': 0.004,
             'DEEP_ARCHIVE': 0.00099
         }
@@ -41,6 +42,7 @@ class S3_analyzer:
                 'INTELLIGENT_TIERING': 0.0,
                 'STANDARD_IA': 0.0,
                 'ONEZONE_IA': 0.0,
+                'GLACIER_IR': 0.0,
                 'GLACIER': 0.0,
                 'DEEP_ARCHIVE': 0.0
             }
@@ -50,6 +52,7 @@ class S3_analyzer:
                 'INTELLIGENT_TIERING': 0,
                 'STANDARD_IA': 0,
                 'ONEZONE_IA': 0,
+                'GLACIER_IR': 0,
                 'GLACIER': 0,
                 'DEEP_ARCHIVE': 0
             }
@@ -117,6 +120,7 @@ class S3_analyzer:
             'INTELLIGENT_TIERING': 0.0,
             'STANDARD_IA': 0.0,
             'ONEZONE_IA': 0.0,
+            'GLACIER_IR': 0.0,
             'GLACIER': 0.0,
             'DEEP_ARCHIVE': 0.0
         }
@@ -125,6 +129,7 @@ class S3_analyzer:
             'INTELLIGENT_TIERING': 0,
             'STANDARD_IA': 0,
             'ONEZONE_IA': 0,
+            'GLACIER_IR': 0,
             'GLACIER': 0,
             'DEEP_ARCHIVE': 0
         }
@@ -186,6 +191,8 @@ class S3_analyzer:
         html += "<th>Items</th>"
         html += "<th>ONEZONE</th>"
         html += "<th>Items</th>"
+        html += "<th>GLACIER IR</th>"
+        html += "<th>Items</th>"
         html += "<th>GLACIER</th>"
         html += "<th>Items</th>"
         html += "<th>DEEP ARCHIVE</th>"
@@ -207,6 +214,8 @@ class S3_analyzer:
             html += f"<td>{bucket['savings']['STANDARD_IA']:.5f}</td>"
             html += f"<td>{bucket['itemtotals']['ONEZONE_IA']}</td>"
             html += f"<td>{bucket['savings']['ONEZONE_IA']:.5f}</td>"
+            html += f"<td>{bucket['itemtotals']['GLACIER_IR']}</td>"
+            html += f"<td>{bucket['savings']['GLACIER_IR']:.5f}</td>"
             html += f"<td>{bucket['itemtotals']['GLACIER']}</td>"
             html += f"<td>{bucket['savings']['GLACIER']:.5f}</td>"
             html += f"<td>{bucket['itemtotals']['DEEP_ARCHIVE']}</td>"
@@ -238,6 +247,8 @@ class S3_analyzer:
                 bucket['savings']['STANDARD_IA'],
                 bucket['itemtotals']['ONEZONE_IA'],
                 bucket['savings']['ONEZONE_IA'],
+                bucket['itemtotals']['GLACIER_IR'],
+                bucket['savings']['GLACIER_IR'],
                 bucket['itemtotals']['GLACIER'],
                 bucket['savings']['GLACIER'],
                 bucket['itemtotals']['DEEP_ARCHIVE'],
@@ -260,6 +271,8 @@ class S3_analyzer:
                 "STANDARD_IA",
                 "ONEZONE_IA Items",
                 "ONEZONE_IA",
+                "GLACIER IR Items",
+                "GLACIER IR",
                 "GLACIER Items",
                 "GLACIER",
                 "DEEP_ARCHIVE Items",
