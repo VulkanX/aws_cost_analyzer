@@ -23,8 +23,8 @@ class S3_analyzer:
 
         # AWS S3 Tier Cost table: https://aws.amazon.com/s3/pricing/
         aws_s3_pricing = {
-            'STANDARD': 0.025,
-            'INTELLIGENT_TIERING': 0.0125,
+            'STANDARD': 0.023,
+            'INTELLIGENT_TIERING': 0.023,
             'STANDARD_IA': 0.0125,
             'ONEZONE_IA': 0.01,
             'GLACIER': 0.004,
