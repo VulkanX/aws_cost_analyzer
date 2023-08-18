@@ -57,8 +57,9 @@ class S3_analyzer:
                 'DEEP_ARCHIVE': 0
             }
 
-            # Get S3 objects
-            objects = s3_client.list_objects_v2(Bucket=bucket_name)
+            total_items = 0
+            total_cost = 0
+            total_size = 0
 
             # Get S3 bucket lifecycle
             try:
@@ -66,51 +67,70 @@ class S3_analyzer:
             except Exception as e:
                 lifecycle = "No"
 
-            if 'Contents' in objects:
-                # Add up the whole bucket cost
-                total_cost = 0
-                total_size = 0
-                for obj in objects['Contents']:
-                    key = obj['Key']
-                    last_modified = obj['LastModified']
-                    storage_class = obj['StorageClass']
+            # Loop through all items in the bucket using continuation tokens
+            continuation_token = None
 
-                    # Calculate the age of the object
-                    # print(f" - {key} - {storage_class} - {last_modified}")
-                    age = (current_date - last_modified).days
+            while True:
+                
+                if continuation_token:
+                    objects = s3_client.list_objects_v2(Bucket=bucket_name, ContinuationToken=continuation_token)
+                else:
+                    objects = s3_client.list_objects_v2(Bucket=bucket_name)
 
-                    # Convert Object size from Bytes to GB
-                    obj['Size'] = obj['Size'] / 1024 / 1024 / 1024
-                    total_size += obj['Size']
+                print(".", end="", flush=True)
 
-                    # # Store base cost of object
-                    current_cost = obj['Size'] * aws_s3_pricing[storage_class]
-                    total_cost += current_cost
+                if 'Contents' in objects:
+                    # Add up the whole bucket cost
 
-                    # Track how many items are in each tier
-                    bucket_items[storage_class] += 1
+                    for obj in objects['Contents']:
+                        total_items += len(obj)
+                        key = obj['Key']
+                        last_modified = obj['LastModified']
+                        storage_class = obj['StorageClass']
 
-                    # If age is greater than 90 days then calculate the potential savings for each storage tier calculate the total for the bucket for each tier
-                    if age >= 90:
-                        # Loop through all pricing tiers and calculate pricing differences
-                        for tier in aws_s3_pricing:
-                            # If the current Tier is the current object's tier then the cost is 0
-                            if tier == storage_class:
-                                bucket_cost[tier] += 0
-                            # If Tier is higher than the current tier then add the difference in cost to the cost of the tier
-                            else:
-                                bucket_cost[tier] += obj['Size'] * (aws_s3_pricing[storage_class] - aws_s3_pricing[tier])
+                        # Calculate the age of the object
+                        # print(f" - {key} - {storage_class} - {last_modified}")
+                        age = (current_date - last_modified).days
 
-                # Store the bucket name and cost in the list of all buckets
-                self.all_buckets.append({
-                    "bucket": bucket_name,
-                    "items": len(objects['Contents']),
-                    "size": total_size,
-                    "cost": total_cost,
-                    "lifecycle": lifecycle,
-                    "savings": bucket_cost,
-                    "itemtotals": bucket_items}
-                )
+                        # Convert Object size from Bytes to GB
+                        obj['Size'] = obj['Size'] / 1024 / 1024 / 1024
+                        total_size += obj['Size']
+
+                        # # Store base cost of object
+                        current_cost = obj['Size'] * aws_s3_pricing[storage_class]
+                        total_cost += current_cost
+
+                        # Track how many items are in each tier
+                        bucket_items[storage_class] += 1
+
+                        # If age is greater than 90 days then calculate the potential savings for each storage tier calculate the total for the bucket for each tier
+                        if age >= 90:
+                            # Loop through all pricing tiers and calculate pricing differences
+                            for tier in aws_s3_pricing:
+                                # If the current Tier is the current object's tier then the cost is 0
+                                if tier == storage_class:
+                                    bucket_cost[tier] += 0
+                                # If Tier is higher than the current tier then add the difference in cost to the cost of the tier
+                                else:
+                                    bucket_cost[tier] += obj['Size'] * (aws_s3_pricing[storage_class] - aws_s3_pricing[tier])
+
+                # check for truncated objects and grab continuation token
+                if objects.get('IsTruncated', False):
+                    continuation_token = objects['NextContinuationToken']
+                else:
+                    break
+
+            # Store the bucket name and cost in the list of all buckets
+            self.all_buckets.append({
+                "bucket": bucket_name,
+                "items": total_items,
+                "size": total_size,
+                "cost": total_cost,
+                "lifecycle": lifecycle,
+                "savings": bucket_cost,
+                "itemtotals": bucket_items}
+            )
+            print("")
 
 
         print("Calculating totals for all buckets")
