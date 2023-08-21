@@ -1,7 +1,6 @@
 import boto3
 import datetime
 import csv
-import jinja2
 
 
 class ebs_analyzer:
