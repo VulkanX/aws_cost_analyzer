@@ -23,6 +23,7 @@ class ami_analyzer:
             for image in images:
                 image_encryption = False
                 image_platform = image['PlatformDetails']
+                image_description = image['Description'] or ''
                 image_id = image['ImageId']
                 image_creation_date = image['CreationDate']
                 image_creation_date = datetime.datetime.strptime(image_creation_date, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -38,7 +39,7 @@ class ami_analyzer:
                 self.images.append({
                     'Region': region,
                     'Name': image['Name'],
-                    'Description': image['Description'],
+                    'Description': image_description,
                     'Platform': image_platform,
                     'ImageId': image_id,
                     'ImageCost': image_storage_cost,
