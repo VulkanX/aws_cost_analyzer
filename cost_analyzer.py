@@ -1,4 +1,4 @@
-from lib.s3_analyzer_light import S3_analyzer
+from lib.s3_analyzer_v2 import S3_analyzer
 from lib.ebs_analyzer import ebs_analyzer
 
 s3 = S3_analyzer()
@@ -15,15 +15,13 @@ regions = [
     'eu-central-1'
 ]
 
-## Creates report showing Region, Size, Encryption, age and monthly cost
-## Exports: CSV
+# ## Creates report showing Region, Size, Encryption, age and monthly cost
+# ## Exports: CSV
 print("EBS: Analyzing...")
 ebs = ebs_analyzer(regions)
 ebs.analyze()
-ebs.csv()
 
 ## Creates report showing Region, Size, Number of Objects, Potential Costs, Lifecycle Policys, Replication Policies
 ## Exports: CSV, HTML
 print("S3: Analyzing...")
 s3.analyze()
-# s3.csv()
