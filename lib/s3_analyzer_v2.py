@@ -20,6 +20,7 @@ class S3_analyzer:
         self.all_buckets = []
 
     def analyze(self, mode='light'):
+        print("S3: Analyzing...")
         if mode == 'light':
             self.light_scan()
             self.csv()
@@ -33,7 +34,6 @@ class S3_analyzer:
 
         # List all S3 buckets in the account
         s3_buckets = s3_client.list_buckets()['Buckets']
-        print(str(len(s3_buckets)) + " buckets found")
 
         # Generate a region list for scanning Cloudwatch
         region_list = []
