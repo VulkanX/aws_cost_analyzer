@@ -23,11 +23,14 @@ class ami_analyzer:
             for image in images:
                 image_encryption = False
                 image_platform = image['PlatformDetails']
-                image_description = image['Description'] or ''
+                image_description = ''
                 image_id = image['ImageId']
                 image_creation_date = image['CreationDate']
                 image_creation_date = datetime.datetime.strptime(image_creation_date, '%Y-%m-%dT%H:%M:%S.%fZ')
                 image_age = datetime.datetime.now() - image_creation_date
+
+                if 'Description' in image:
+                    image_description = image['Description']
 
                 image_storage_cost = 0
                 for block_device in image['BlockDeviceMappings']:
