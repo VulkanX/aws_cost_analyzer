@@ -10,7 +10,8 @@ class ebs_analyzer:
         self.region_list = region_list
 
     def analyze(self):
-
+        print("EBS: Analyzing...")
+        
         # Loop through Regions
         for region in self.region_list:        
 
