@@ -18,8 +18,6 @@ class ebs_analyzer:
             ebs = boto3.client('ec2', region_name=region)
             snapshots = ebs.describe_snapshots(OwnerIds=['self'])['Snapshots']
 
-            snapshot_data = []
-
             # Flag Snapshots over 30 days old
             for snapshot in snapshots:
                 snapshot_id = snapshot['SnapshotId']
@@ -36,6 +34,8 @@ class ebs_analyzer:
                     'StorageTier': snapshot['StorageTier'],
                     'SnapshotEncryption': snapshot['Encrypted'],
                 })
+        self.csv()
+
 
 
     def csv(self):
